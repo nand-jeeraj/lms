@@ -198,6 +198,7 @@ const FaceLogin = () => {
 
     try {
       setMessage("Authenticating...");
+      console.log(BASE_URL)
       const res = await axios.post(`${BASE_URL}api/face-login`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
