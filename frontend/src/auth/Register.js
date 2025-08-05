@@ -218,6 +218,11 @@ export default function Register() {
       alert("Password must be at least 6 characters long.");
       return;
     }
+    if (!form.colid || isNaN(form.colid)) {
+  alert("College ID must be a number");
+  return;
+}
+
 
     setIsLoading(true);
     const data = new FormData();
@@ -226,6 +231,8 @@ export default function Register() {
     data.append("password", form.password);
     data.append("role", form.role);
     data.append("image", image);
+    data.append("colid", form.colid);
+
 
     try {
       await axios.post(`${BASE_URL}api/register`, data, {
@@ -286,6 +293,16 @@ export default function Register() {
           <option value="Student">Student</option>
           <option value="faculty">Faculty</option>
         </FormSelect>
+
+
+        <FormInput
+          type="text"
+          placeholder="College ID"
+          value={form.colid || ""}
+          onChange={(e) => setForm({ ...form, colid: e.target.value })}
+          required
+          disabled={isLoading}
+        />
 
         <FileInputWrapper>
           <FileInputLabel disabled={isLoading}>

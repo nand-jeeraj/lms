@@ -21,9 +21,9 @@ scheduled_assignment_collection = db["scheduled_assignments"]
 submission_collection = db["submissions"]
 assignment_submission_collection = db["assignment_submissions"]
 
-# ✅ Test Connection
+
 try:
-    # This will trigger a request to the server
+  
     db.list_collection_names()
     print("✅ MongoDB connection successful.")
 except Exception as e:

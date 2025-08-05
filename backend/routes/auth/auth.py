@@ -34,6 +34,16 @@ def register():
     password = request.form.get('password')
     role = request.form.get('role')
     image_file = request.files.get('image')
+    colid_raw = request.form.get('colid')
+
+    if not all([name, email, password, role, image_file, colid_raw]):
+        return jsonify({'error': 'All fields including college ID are required'}), 400
+
+    if not colid_raw.isdigit():
+        return jsonify({'error': 'College ID must be a numeric value'}), 400
+
+    colid = int(colid_raw)
+  
 
     if not all([name, email, password, role, image_file]):
         return jsonify({'error': 'All fields required'}), 400
@@ -61,13 +71,42 @@ def register():
 
     hashed_password = generate_password_hash(password)
 
+    # db.users.insert_one({
+    #     'name': name,
+    #     'email': email,
+    #     'password': hashed_password,
+    #     'role': role,
+    #     'facedata': face_encoding
+    # })
+
     db.users.insert_one({
-        'name': name,
         'email': email,
+        'name': name,
+        'phone': 'Unknown',
         'password': hashed_password,
         'role': role,
+        'regno': 'Unknown',
+        'programcode': 'Unknown',
+        'admissionyear': 'Unknown',
+        'semester': 'Unknown',
+        'section': 'Unknown',
+        'gender': 'Unknown',
+        'department': 'Unknown',
+        'photo': 'Unknown',
+        'expotoken': None,
+        'category': 'Unknown',
+        'address': 'Unknown',
+        'quota': 'Unknown',
+        'user': 'Unknown',
+        'addedby': 'Unknown',
+        'status1': 'Unknown',
+        'comments': 'Unknown',
+        'lastlogin': None,
+        'colid': colid,
+        'status': 1,
         'facedata': face_encoding
     })
+
 
     return jsonify({'message': 'User registered successfully'}), 201
 
