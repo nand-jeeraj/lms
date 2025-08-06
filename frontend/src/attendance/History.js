@@ -136,7 +136,7 @@ export default function History() {
             <tbody>
               {records.map((r, idx) => (
                 <TableRow key={idx}>
-                  <TableCell>{r.Student_name}</TableCell>
+                  <TableCell>{r.name}</TableCell>
                   <TimestampCell>
                     {new Date(r.timestamp).toLocaleString()}
                   </TimestampCell>

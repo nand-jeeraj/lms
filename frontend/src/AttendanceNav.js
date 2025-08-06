@@ -243,7 +243,6 @@ export default function AttendanceNav() {
         <CustomLink to="/attendance" icon={UploadIcon} location={location}>Upload</CustomLink>
         <CustomLink to="/attendance/history" icon={HistoryIcon} location={location}>History</CustomLink>
         <CustomLink to="/attendance/dashboard" icon={DashboardIcon} location={location}>Dashboard</CustomLink>
-        <CustomLink to="/attendance/add-face" icon={FaceIcon} location={location}>Add Face</CustomLink>
       </Navigation>
       
       <Outlet />
