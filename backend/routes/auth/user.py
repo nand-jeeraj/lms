@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import os
 
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 
 class DummyUser:
     def __init__(self, user_id: str):

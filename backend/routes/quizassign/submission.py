@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # MongoDB Connection
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 scheduled_quiz_collection = db["scheduled_quizzes"]
 quizzes_collection = db["quizzes"]
 submissions_collection = db["submissions"]

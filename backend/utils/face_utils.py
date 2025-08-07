@@ -7,7 +7,7 @@ from pymongo import MongoClient
 import os
 
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 
 # Load all known student encodings and names from the DB
 def load_known_faces_from_db():

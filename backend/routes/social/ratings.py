@@ -12,7 +12,7 @@ router = Blueprint("ratings", __name__)
 
 # MongoDB Connection
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 ratings_collection = db["ratings"]
 course_ratings_collection = db["course_ratings"]
 users_collection = db["users"]

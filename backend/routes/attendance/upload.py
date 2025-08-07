@@ -8,7 +8,7 @@ from dependencies import get_current_user
 import os
 
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 
 upload_router = Blueprint("upload", __name__, url_prefix="/api")
 

@@ -17,7 +17,7 @@ from PIL import Image
 import io
 
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 
 router = Blueprint("auth", __name__, url_prefix="/api")
 

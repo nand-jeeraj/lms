@@ -13,7 +13,7 @@ router = Blueprint("feedback", __name__)
 
 # MongoDB Connection
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 feedback_collection = db["feedback"]
 
 class FeedbackComment:

@@ -249,7 +249,7 @@ export default function Navbar() {
   };
 
   const handleDashboardClick = () => {
-    window.location.href = "/"; // Replace with your actual dashboard URL
+    window.location.href = "/"; 
   };
 
   return (

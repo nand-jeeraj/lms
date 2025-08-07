@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { BASE_URL } from '../services/api';
 
-// Styled Components
+
 const PageContainer = styled.div`
   background: linear-gradient(to bottom right, #f7fafc, #ebf8ff);
   min-height: 100vh;
@@ -125,7 +125,7 @@ export default function StudentFeedback() {
   useEffect(() => {
     const fetchFaculty = async () => {
       try {
-        const token = localStorage.getItem("token"); // make sure token is stored after login
+        const token = localStorage.getItem("token"); 
         const response = await fetch(`${BASE_URL}users?role=faculty`, {
           headers: {
             "Authorization": `Bearer ${token}`
@@ -153,12 +153,12 @@ const submitFeedback = async () => {
   console.log("📤 Sending student_id:", studentId);
 
   try {
-    const token = localStorage.getItem("token"); // Get the JWT token
+    const token = localStorage.getItem("token"); 
     const response = await fetch(`${BASE_URL}feedback`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`  // Include the token
+        "Authorization": `Bearer ${token}`  
       },
       body: JSON.stringify({
         faculty_id: selectedFaculty,

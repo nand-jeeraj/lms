@@ -8,7 +8,7 @@ import os
 import traceback
 
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 
 dashboard_router = Blueprint("dashboard", __name__, url_prefix="/api")
 

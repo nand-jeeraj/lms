@@ -11,7 +11,7 @@ router = Blueprint('quizzes', __name__)
 
 # MongoDB Connection
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 quizzes_collection = db["quizzes"]
 scheduled_quizzes_collection = db["scheduled_quizzes"]
 

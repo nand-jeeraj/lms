@@ -19,7 +19,7 @@ CORS(router, resources={r"/*": {
 
 # MongoDB Connection
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 discussions_collection = db["discussions"]
 users_collection = db["users"]
 

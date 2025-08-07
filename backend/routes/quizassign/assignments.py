@@ -22,7 +22,7 @@ CORS(router)
 
 # MongoDB Connection
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 assignments_collection = db["assignments"]
 scheduled_assignments_collection = db["scheduled_assignments"]
 submissions_collection = db["assignment_submissions"]

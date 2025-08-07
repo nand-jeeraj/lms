@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # MongoDB setup
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client["edu_app"]
+db = client[os.getenv("DB_NAME")]
 
 router = Blueprint("face_login", __name__, url_prefix="/api")
 
