@@ -136,6 +136,8 @@ export default function Login() {
           localStorage.setItem("user_role", role);
           localStorage.setItem("user_id", res.data.user_id);
           localStorage.setItem("user_name", res.data.name);
+          localStorage.setItem("colid", res.data.colid);
+          console.log("colid", res.data.colid);
           
           setAuthenticated(true);
           window.location.href = "/";

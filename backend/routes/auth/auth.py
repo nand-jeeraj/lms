@@ -129,7 +129,7 @@ def login():
                 'name': user.get('name'),
                 'role': user.get('role', 'student'),
                 'user_id': str(user["_id"]),
-                'colid': user.get('colid'),
+                'colid': user.get('colid', 'N/A'),
                 'token': "dummy-session-token"  # optional if not using JWT
             }), 200
         

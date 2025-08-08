@@ -22,12 +22,16 @@ def upload():
 
         if 'image' not in request.files:
             return jsonify({"error": "No image provided"}), 400
+        
+        colid = request.form.get("colid")
+
+        print("colid:", colid)
 
         file = request.files['image']
         image_bytes = file.read()
 
         # Load known student faces from DB
-        known_encs, known_names = load_known_faces_from_db()
+        known_encs, known_names = load_known_faces_from_db(colid)
 
         # Compare faces from uploaded image
         present, unknown, total = recognize_faces_from_bytes(
@@ -36,7 +40,7 @@ def upload():
         for name in present:
           student = db.users.find_one({"name": name, "role": "Student"})
           db.uploaded_photos.insert_one({
-            "colid": student["colid"],
+            "colid": colid,
             "timestamp": datetime.utcnow(),
             "image_base64": base64.b64encode(image_bytes).decode(),
             "present_Students": present,
@@ -53,7 +57,7 @@ def upload():
             student = db.users.find_one({"name": name, "role": "Student"})
             if student:
                 attendance_record = {
-                    "colid": student["colid"],  
+                    "colid": colid,  
                     "name": student["name"],
                     "timestamp": datetime.utcnow(),
                     "program": student.get("program", "UNKNOWN"),       

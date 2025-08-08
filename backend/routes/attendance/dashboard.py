@@ -16,9 +16,21 @@ dashboard_router = Blueprint("dashboard", __name__, url_prefix="/api")
 def dashboard():
     try:
         current_user = get_current_user()
-
+        colid = request.args.get("colid")
         
-        pipeline = [
+        # Add match stage if colid is provided
+        pipeline = []
+        if colid:
+            try:
+                colid_filter = colid
+            except ValueError:
+                colid_filter = colid
+            pipeline.append({
+                "$match": {"colid": colid_filter}
+            })
+        
+        # Add the existing grouping and sorting
+        pipeline.extend([
             {
                 "$group": {
                     "_id": "$name",
@@ -28,10 +40,9 @@ def dashboard():
             {
                 "$sort": {"count": -1}
             }
-        ]
+        ])
 
         data = list(db.attendance.aggregate(pipeline))
-
         return jsonify(data)
 
     except Exception as e:
@@ -39,12 +50,14 @@ def dashboard():
         return jsonify({"detail": str(e)}), 500
 
 @dashboard_router.route("/attendance_history", methods=["GET"])
-@dashboard_router.route("/attendance_history", methods=["GET"])
 def history():
     try:
         current_user = get_current_user()
-        recs = list(db.attendance.find().sort("timestamp", -1))
+        colid = request.args.get("colid")
+        
+        recs = list(db.attendance.find({"colid":colid}).sort("timestamp", -1))  # Add query here
 
+        # Rest of the processing remains the same
         for r in recs:
             r["_id"] = str(r["_id"])
             if isinstance(r.get("timestamp"), datetime):
@@ -54,7 +67,6 @@ def history():
                 r["name"] = r["Student_name"]  
 
         return jsonify(recs)
-
     except Exception as e:
         traceback.print_exc()
         return jsonify({"detail": f"Internal server error: {str(e)}"}), 500

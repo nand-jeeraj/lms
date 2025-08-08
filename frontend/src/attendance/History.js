@@ -100,10 +100,13 @@ export default function History() {
 
   useEffect(() => {
     setIsLoading(true);
-    axios.get(`${BASE_URL}api/attendance_history`)
-      .then((res) => {
-        setRecords(res.data);
-      })
+    const colid = localStorage.getItem("colid");
+    axios.get(`${BASE_URL}api/attendance_history`, {
+      params: { colid }  // Add this line
+    })
+    .then((res) => {
+      setRecords(res.data);
+    })
       .catch((err) => {
         console.error("Failed to load history", err);
       })

@@ -72,7 +72,8 @@ def face_login():
                     'name': user['name'],
                     "role": user["role"],
                     'token': str(user['_id']),
-                    'id': str(user['_id'])
+                    'id': str(user['_id']),
+                    'colid': user.get('colid', 'N/A')
                 }), 200
 
         return jsonify({'error': 'Face not recognized'}), 401

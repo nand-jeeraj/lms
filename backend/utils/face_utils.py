@@ -10,18 +10,21 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client[os.getenv("DB_NAME")]
 
 # Load all known student encodings and names from the DB
-def load_known_faces_from_db():
+def load_known_faces_from_db(colid):
     known_encs = []
     known_names = []
 
+    print(f"Searching for students with colid: {colid}")  # Debug print
+    
     students = db.users.find({
         "role": {"$regex": "^student$", "$options": "i"},
-        "facedata": {"$exists": True}
-    })
-
+        "facedata": {"$exists": True},
+        "colid": int(colid) if isinstance(colid, str) else colid  # Ensure type matching
+    })# Debug print
+    
     for student in students:
         try:
-            
+            print(f"Processing student: {student['name']}")  # Debug print
             encoding = np.array(student["facedata"])
             known_encs.append(encoding)
             known_names.append(student["name"])
