@@ -173,8 +173,12 @@ export default function UploadPage() {
       return;
     }
 
+    const colid = localStorage.getItem("colid");
+    console.log("colid:", colid);
+
     const fd = new FormData();
     fd.append("image", image);
+    fd.append("colid", colid);
 
     setLoading(true);
     setResult(null); 
@@ -184,6 +188,7 @@ export default function UploadPage() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setResult(res.data);
+      console.log("Upload result:", res.data);
     } catch (err) {
       console.error(err);
       alert("Upload failed.");

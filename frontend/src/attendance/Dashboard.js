@@ -129,7 +129,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`${BASE_URL}api/attendance_dashboard`)
+    const colid = localStorage.getItem("colid");
+    
+    axios.get(`${BASE_URL}api/attendance_dashboard`, {
+      params: { colid }
+  })
       .then((res) => {
         setData(res.data);
         // Calculate stats

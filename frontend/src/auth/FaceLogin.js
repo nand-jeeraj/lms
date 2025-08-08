@@ -214,6 +214,9 @@ const FaceLogin = () => {
         localStorage.setItem("user_id", res.data.id);
         localStorage.setItem("user_name", res.data.name);
         localStorage.setItem("user_role", role);
+        localStorage.setItem("colid", res.data.colid || "N/A");
+        console.log("colid", res.data.colid);
+        
         setAuthenticated(true);
         setTimeout(() => {
           window.location.href = "/";
