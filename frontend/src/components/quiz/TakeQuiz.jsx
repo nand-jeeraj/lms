@@ -470,6 +470,9 @@ function TakeQuiz() {
   const fullscreenHandle = useFullScreenHandle();
 
 useEffect(() => {
+  
+  const colid = parseInt(localStorage.getItem('colid'), 10);
+
   const storedUserId = localStorage.getItem('user_id') || `Student_${Math.random().toString(36).substr(2, 9)}`;
   localStorage.setItem('quizUserId', storedUserId);
   setUserId(storedUserId);
@@ -484,8 +487,8 @@ setAttempts(parsedAttempts[storedUserId]);
 
 
   Promise.all([
-    axios.get(`${BASE_URL}quizzes`),
-    axios.get(`${BASE_URL}scheduled-quizzes`)
+    axios.get(`${BASE_URL}quizzes`, { params: { colid } }),
+    axios.get(`${BASE_URL}scheduled-quizzes`, { params: { colid } })
   ])
     .then(([normalRes, scheduledRes]) => {
       setQuizzes([...normalRes.data, ...scheduledRes.data]);

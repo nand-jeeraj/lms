@@ -320,8 +320,11 @@ function ScheduleQuiz() {
       return;
     }
 
+    const colid = localStorage.getItem("colid");
+
     // Prepare the data in the correct format
     const payload = {
+      colid: colid,
       title: quiz.title,
       questions: quiz.questions.map(q => ({
         type: "mcq",  // Explicitly set the type

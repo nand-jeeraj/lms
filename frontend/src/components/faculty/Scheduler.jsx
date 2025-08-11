@@ -273,6 +273,7 @@ const LoadingDots = styled.div`
   }
 `;
 
+const colid = parseInt(localStorage.getItem('colid'), 10);
 
 // Animation variants
 const questionVariants = {
@@ -503,6 +504,7 @@ const handleAIFileUpload = async (e) => {
     });
 
     const payload = {
+      colid: colid,
       title: form.title,
       questions: questions,
       ...(form.start_time && form.end_time && {
@@ -534,26 +536,13 @@ const handleAIFileUpload = async (e) => {
 // Add this utility function at the top of your file
 const getISTDateTime = (date) => {
   if (!date) return '';
-  
   const d = new Date(date);
-  // IST is UTC+5:30
-  const offset = 5.5 * 60 * 60 * 1000;
-  const istDate = new Date(d.getTime() + offset);
-  
-  // Format as YYYY-MM-DDTHH:mm for datetime-local input
-  return istDate.toISOString().slice(0, 16);
+  return d.toISOString().slice(0, 16); // Keep as-is, no conversion needed
 };
 
 const getLocalDateTimeFromIST = (istString) => {
   if (!istString) return '';
-  
-  // Parse the IST datetime string (assuming it's in local time)
-  const d = new Date(istString);
-  // Adjust back to UTC by subtracting the offset
-  const offset = 5.5 * 60 * 60 * 1000;
-  const localDate = new Date(d.getTime() - offset);
-  
-  return localDate.toISOString().slice(0, 16);
+  return istString; // Keep as-is, no conversion needed
 };
 
   return (
@@ -679,23 +668,25 @@ const getLocalDateTimeFromIST = (istString) => {
       </FormGroup>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <FormGroup>
-          <Label>Start Time</Label>
-          <Input 
-            type="datetime-local" 
-            onChange={(e) => setForm({ ...form, start_time: e.target.value })} 
-          required
-          />
-        </FormGroup>
+<FormGroup>
+  <Label>Start Time (IST)</Label>
+  <Input 
+    type="datetime-local" 
+    value={getISTDateTime(form.start_time)}
+    onChange={(e) => setForm({ ...form, start_time: getLocalDateTimeFromIST(e.target.value) })}
+    required
+  />
+</FormGroup>
 
-        <FormGroup>
-          <Label>End Time</Label>
-          <Input 
-            type="datetime-local" 
-            onChange={(e) => setForm({ ...form, end_time: e.target.value })} 
-          required
-          />
-        </FormGroup>
+<FormGroup>
+  <Label>End Time (IST)</Label>
+  <Input 
+    type="datetime-local" 
+    value={getISTDateTime(form.end_time)}
+    onChange={(e) => setForm({ ...form, end_time: getLocalDateTimeFromIST(e.target.value) })}
+    required
+  />
+</FormGroup>
       </div>
 
       <FormGroup>
