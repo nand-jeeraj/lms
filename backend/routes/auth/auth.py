@@ -125,7 +125,7 @@ def login():
                 'token': "dummy-session-token"  
             }), 200
         
-        return jsonify({'success': True, 'message': 'Login successful','role': user.get('role', 'student'),}), 200
+        return jsonify({'success': False, 'message': 'Invalid email or password'}), 401
 
 @router.route("/logout", methods=["POST"])
 def logout():

@@ -19,12 +19,20 @@ scheduled_quizzes_collection = db["scheduled_quizzes"]
 def create_quiz():
     try:
         quiz = request.get_json()
+
+        if "colid" in quiz:
+            try:
+                quiz["colid"] = int(quiz["colid"])
+            except ValueError:
+                return jsonify({"detail": "colid must be an integer"}), 400
+
         # Ensure each question has a type and ID
         for question in quiz["questions"]:
             if not question.get("id"):
                 question["id"] = str(ObjectId())
             if not question.get("type"):
                 question["type"] = "mcq"  # Default to MCQ if type not specified
+
         result = quizzes_collection.insert_one(quiz)
         return jsonify({"message": "Quiz created successfully", "id": str(result.inserted_id)})
     except Exception as e:
@@ -34,6 +42,13 @@ def create_quiz():
 def create_scheduled_quiz():
     try:
         quiz = request.get_json()
+
+        if "colid" in quiz:
+            try:
+                quiz["colid"] = int(quiz["colid"])
+            except ValueError:
+                return jsonify({"detail": "colid must be an integer"}), 400
+            
         # Add IDs to each question if not provided
         for question in quiz["questions"]:
             if not question.get("id"):
@@ -46,7 +61,17 @@ def create_scheduled_quiz():
 @router.route("/quizzes", methods=["GET"])
 def get_quizzes():
     try:
-        quizzes = list(quizzes_collection.find({}))
+        colid = request.args.get("colid")
+
+        query = {}
+
+        if colid:
+            try:
+                query["colid"] = int(colid)
+            except:
+                query["colid"] = colid
+        
+        quizzes = list(quizzes_collection.find(query))
         for quiz in quizzes:
             quiz["_id"] = str(quiz["_id"])
         return jsonify(quizzes)
@@ -56,9 +81,20 @@ def get_quizzes():
 @router.route("/scheduled-quizzes", methods=["GET"])
 def get_scheduled_quizzes():
     try:
-        quizzes = list(scheduled_quizzes_collection.find({}))
+        colid = request.args.get("colid")
+
+        query = {}
+
+        if colid:
+            try:
+                query["colid"] = int(colid)
+            except:
+                query["colid"] = colid
+
+        quizzes = list(scheduled_quizzes_collection.find(query))
         for quiz in quizzes:
             quiz["_id"] = str(quiz["_id"])
+
         return jsonify(quizzes)
     except Exception as e:
         return jsonify({"detail": str(e)}), 500
