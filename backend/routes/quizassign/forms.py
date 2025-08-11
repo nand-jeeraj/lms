@@ -38,7 +38,12 @@ class FormSubmission:
 @router.route("/forms", methods=["GET"])
 def get_forms():
     try:
-        forms = list(forms_collection.find())
+        colid = request.args.get("colid", type=int)
+        query = {}
+        if colid is not None:
+            query["colid"] = colid
+
+        forms = list(forms_collection.find(query).sort("_id", -1))
         
         # Convert ObjectId to string for each form and count submissions
         for form in forms:
@@ -61,6 +66,7 @@ def create_form():
         )
         
         form_data = {
+            "colid": int(data.get("colid", 0)),
             "title": form.title,
             "description": form.description,
             "fields": [field.__dict__ for field in form.fields],
@@ -82,8 +88,10 @@ def get_form(form_id):
     try:
         if not ObjectId.is_valid(form_id):
             return jsonify({"detail": "Invalid form ID format"}), 400
-            
-        form = forms_collection.find_one({"_id": ObjectId(form_id)})
+        
+        query = {"_id": ObjectId(form_id)}
+
+        form = forms_collection.find_one(query)
         if not form:
             return jsonify({"detail": "Form not found"}), 404
             
@@ -130,7 +138,7 @@ def get_form_submissions():
         query = {}
         if form_id:
             query["form_id"] = form_id
-        
+            
         submissions = list(submissions_collection.find(query))
         
         # Convert ObjectId to string for each submission

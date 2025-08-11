@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from routes.quizassign import (quizzes, assignments, evaluation, submission, generate_questions, explain_answers, forms)
 from routes.social import (discussions, announcements, feedback, meetings, ratings, users)

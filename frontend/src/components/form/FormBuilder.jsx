@@ -176,6 +176,8 @@ const URLBox = styled.div`
   word-break: break-all;
 `;
 
+const colid = parseInt(localStorage.getItem('colid'), 10);
+
 const RadioLabel = styled(CheckboxLabel)``;
 const RadioInput = styled(CheckboxInput)``;
 
@@ -262,7 +264,7 @@ function FormBuilder() {
 
 const submitForm = async () => {
   try {
-    const response = await axios.post(`${BASE_URL}forms`, form);
+    const response = await axios.post(`${BASE_URL}forms`, { ...form, colid });
     if (response.data && response.data.id) {
       const url = `${window.location.origin}/forms/${response.data.id}`;
       setFormUrl(url);
@@ -286,7 +288,7 @@ const submitForm = async () => {
   const fetchSubmissions = async () => {
     try {
       // In a real app, you would fetch submissions for this specific form
-      const response = await axios.get(`${BASE_URL}form-submissions`);
+      const response = await axios.get(`${BASE_URL}form-submissions`, {params: { colid } });
       setSubmissions(response.data);
       setViewMode("submissions");
     } catch (error) {

@@ -165,6 +165,8 @@ const EmptyState = styled.div`
   font-size: 1.1rem;
 `;
 
+const colid = parseInt(localStorage.getItem('colid'), 10) || 0; // Default to 0 if not set
+
 function FormSubmissions() {
   const { formId } = useParams();
   const [submissions, setSubmissions] = useState([]);
@@ -179,13 +181,13 @@ function FormSubmissions() {
         setLoading(true);
         if (formId) {
           const [formRes, submissionsRes] = await Promise.all([
-            axios.get(`${BASE_URL}forms/${formId}`),
+            axios.get(`${BASE_URL}forms/${formId}`, { params: { colid } }),
             axios.get(`${BASE_URL}form-submissions?form_id=${formId}`)
           ]);
           setCurrentForm(formRes.data);
           setSubmissions(submissionsRes.data);
         } else {
-          const res = await axios.get(`${BASE_URL}forms`);
+          const res = await axios.get(`${BASE_URL}forms`, { params: { colid } });
           setForms(res.data);
         }
         setError(null);

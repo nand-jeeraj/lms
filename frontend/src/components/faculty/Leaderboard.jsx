@@ -194,6 +194,8 @@ const ScoreHighlight = styled(motion.div)`
   font-weight: 600;
 `;
 
+const colid = parseInt(localStorage.getItem("colid"));
+
 function Leaderboard() {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -203,7 +205,7 @@ function Leaderboard() {
     const fetchLeaderboardData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${BASE_URL}leaderboard`);
+        const response = await axios.get(`${BASE_URL}leaderboard`, {params: { colid }});
         setLeaderboardData(response.data);
         setError(null);
       } catch (err) {

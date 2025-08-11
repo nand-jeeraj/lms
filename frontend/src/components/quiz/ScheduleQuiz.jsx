@@ -324,7 +324,7 @@ function ScheduleQuiz() {
 
     // Prepare the data in the correct format
     const payload = {
-      colid: colid,
+      colid: parseInt(colid, 10),
       title: quiz.title,
       questions: quiz.questions.map(q => ({
         type: "mcq",  // Explicitly set the type

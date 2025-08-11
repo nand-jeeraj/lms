@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, Response, send_file, Blueprint
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from gridfs import GridFS
 from io import BytesIO
@@ -51,6 +51,7 @@ def create_assignment():
     try:
         data = request.get_json()
         assignment_data = {
+            "colid": data.get("colid"),
             "title": data["title"],
             "questions": [q if isinstance(q, dict) else q.dict() for q in data["questions"]],
             "created_at": datetime.now()
@@ -72,6 +73,7 @@ def create_scheduled_assignment():
     try:
         data = request.get_json()
         assignment_data = {
+            "colid": data.get("colid"),
             "title": data["title"],
             "questions": [q if isinstance(q, dict) else q.dict() for q in data["questions"]],
             "start_time": datetime.fromisoformat(data["start_time"]),
@@ -133,6 +135,9 @@ def update_scheduled_assignment(assignment_id):
 @router.route("/upload-file-assignment", methods=["POST"])
 def upload_file_assignment():
     try:
+        colid = request.form.get("colid")
+        if colid:
+            colid = int(colid)
         title = request.form.get("title")
         totalMarks = request.form.get("totalMarks", "0")
         file = request.files.get("file")
@@ -153,6 +158,7 @@ def upload_file_assignment():
         )
         
         assignment_data = {
+            "colid": colid,
             "title": title,
             "totalMarks": totalMarks,
             "file_id": str(file_id),
@@ -247,6 +253,7 @@ def submit_file_assignment(assignment_id):
         assignment_title = assignment.get("title") if assignment else "Untitled"
 
         submission_data = {
+            "colid": assignment.get("colid"),
             "assignment_id": assignment_id,
             "user_id": userId,
             "file_id": str(file_id),
@@ -263,8 +270,10 @@ def submit_file_assignment(assignment_id):
 @router.route("/list-submissions/<assignment_id>", methods=["GET"])
 def list_submissions(assignment_id):
     try:
+        colid = request.args.get("colid")
+
         submissions = list(submissions_collection.find(
-            {"assignment_id": assignment_id},
+            {"assignment_id": assignment_id, "colid": colid},
             {"file_id": 1, "user_id": 1, "submitted_at": 1}
         ))
 
@@ -284,7 +293,14 @@ def list_submissions(assignment_id):
 @router.route("/assignments/<assignment_id>", methods=["GET"])
 def get_assignment(assignment_id):
     try:
-        assignment = assignments_collection.find_one({"_id": ObjectId(assignment_id)})
+        colid = request.args.get("colid")
+        query = {"_id": ObjectId(assignment_id)}
+        if colid:
+            query["colid"] = int(colid)
+        else:
+            query["colid"] = colid
+
+        assignment = assignments_collection.find_one(query)
         if not assignment:
             return jsonify({"detail": "Assignment not found"}), 404
         
@@ -300,6 +316,7 @@ def get_assignment(assignment_id):
 def grade_assignment():
     try:
         data = request.get_json()
+        colid = data.get("colid")
         submission_id = data.get("submission_id")
         assignment_id = data.get("assignment_id")
         user_id = data.get("user_id")
@@ -312,7 +329,7 @@ def grade_assignment():
             return jsonify({"detail": "Invalid file ID"}), 400
         
         result = submissions_collection.update_one(
-            {"file_id": submission_id},
+            {"file_id": submission_id, "colid": colid},
             {"$set": {
                 "score": marks,
                 "graded_at": datetime.now(),
@@ -323,10 +340,10 @@ def grade_assignment():
         if result.modified_count == 1:
             logger.info("Marks updated successfully for file_id: %s", submission_id)
 
-            assignment = assignments_collection.find_one({"_id": ObjectId(assignment_id)})
+            assignment = assignments_collection.find_one({"_id": ObjectId(assignment_id), "colid": colid})
             if assignment and "totalMarks" in assignment:
                 submissions_collection.update_one(
-                    {"file_id": submission_id},
+                    {"file_id": submission_id, "colid": colid},
                     {"$set": {"total_questions": assignment["totalMarks"]}}
                 )
                 logger.info("totalMarks added to submission: %s", assignment["totalMarks"])

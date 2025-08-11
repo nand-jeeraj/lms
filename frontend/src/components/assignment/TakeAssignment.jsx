@@ -313,6 +313,8 @@ const FileDownloadButton = styled(Button)`
   }
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0; // Get colid from localStorage or default to 0
+
 const shuffleArray = (array) => {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
@@ -394,6 +396,7 @@ const handleFileUpload = async (assignmentId, file) => {
 
   try {
     const formData = new FormData();
+    formData.append("colid", colid);
     formData.append("file", file);
     formData.append("userId", userId);
     
@@ -433,16 +436,16 @@ const handleFileUpload = async (assignmentId, file) => {
 
  // Only fetch from working endpoints
   Promise.all([
-    axios.get(`${BASE_URL}assignments`),
-    axios.get(`${BASE_URL}scheduled-assignments`)
+    axios.get(`${BASE_URL}assignments`, { params: { colid } }),
+    axios.get(`${BASE_URL}scheduled-assignments`, { params: { colid } })
   ])
     .then(([quizzesRes, scheduledQuizzesRes]) => {
       setAssignments([...quizzesRes.data, ...scheduledQuizzesRes.data]);
     })
     .catch((err) => {
       console.error("Fetch error:", err);
-      // If scheduled-quizzes fails, just load regular quizzes
-      axios.get(`${BASE_URL}quizzes`)
+
+      axios.get(`${BASE_URL}quizzes`, { params: { colid } })
         .then(res => setAssignments(res.data))
         .catch(err => {
           console.error("Failed to fetch quizzes:", err);
@@ -470,6 +473,7 @@ const handleAutoSubmit = useCallback(() => {
   });
 
   const payload = {
+    colid: parseInt(colid, 10),
     user_id: userId,
     assignment_id: selectedAssignment._id,
     assignment_title: selectedAssignment.title,
@@ -721,6 +725,7 @@ const fetchExplanations = async (submissionData, assignmentData) => {
     }
 
     const payload = {
+      colid: parseInt(colid, 10),
       user_id: userId,
       assignment_id: selectedAssignment._id,
       assignment_title: selectedAssignment.title,
