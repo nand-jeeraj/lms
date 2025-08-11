@@ -35,7 +35,8 @@ def register():
     role = request.form.get('role')
     image_file = request.files.get('image')
     colid_raw = request.form.get('colid')
-    programcode = request.form.get('programcode') 
+    programcode = request.form.get('programcode')
+    admissionyear = request.form.get('admissionyear')
    
 
     if not all([name, email, password, role, image_file, colid_raw,programcode]):
@@ -43,7 +44,9 @@ def register():
 
     if role not in ["Student", "faculty"]:
         return jsonify({'error': 'Invalid role specified'}), 400
-
+    
+    if not (admissionyear.isdigit() and len(admissionyear) == 4):
+        return jsonify({'error': 'Admission year must be a valid 4-digit year'}), 400
     
     if not colid_raw.isdigit():
         return jsonify({'error': 'College ID must be a numeric value'}), 400
@@ -83,7 +86,7 @@ def register():
         'status': 1,
         'facedata': face_encoding,
         'regno': 'Unknown',
-        'admissionyear': 'Unknown',
+        'admissionyear': admissionyear,
         'semester': 'Unknown',
         'section': 'Unknown',
         'gender': 'Unknown',

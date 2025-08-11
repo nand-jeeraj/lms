@@ -13,17 +13,18 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Spinner animation
+// Spinner animation (same as History.js)
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
-// Styled Components
+// Styled Components (from History.js)
 const Container = styled.div`
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 `;
 
 const Card = styled(motion.div)`
@@ -37,6 +38,14 @@ const Title = styled.h2`
   color: #2b6cb0;
   font-size: 1.75rem;
   margin-bottom: 1.5rem;
+  font-weight: 600;
+`;
+
+const EmptyState = styled.p`
+  color: #718096;
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
 `;
 
 const Table = styled.table`
@@ -54,7 +63,7 @@ const TableRow = styled.tr`
     background-color: #f7fafc;
   }
   &:hover {
-    background-color: #e6fffa;
+    background-color: #ebf8ff;
     cursor: pointer;
   }
 `;
@@ -62,16 +71,19 @@ const TableRow = styled.tr`
 const TableHeaderCell = styled.th`
   padding: 1rem;
   text-align: left;
+  color: #2d3748;
+  font-weight: 600;
   border-bottom: 2px solid #e2e8f0;
 `;
 
 const TableCell = styled.td`
   padding: 1rem;
+  color: #4a5568;
   border-bottom: 1px solid #e2e8f0;
 `;
 
 const StudentCell = styled(TableCell)`
-  font-weight: 500;
+  font-weight: 600;
   color: #2b6cb0;
 `;
 
@@ -99,15 +111,12 @@ const FilterSection = styled.div`
 `;
 
 const Input = styled.input`
-  padding: 0.5rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid #cbd5e0;
   border-radius: 4px;
-`;
-
-const Select = styled.select`
-  padding: 0.5rem;
-  border: 1px solid #cbd5e0;
-  border-radius: 4px;
+  flex: 1;
+  min-width: 150px;
+  font-size: 1rem;
 `;
 
 const Button = styled.button`
@@ -117,6 +126,12 @@ const Button = styled.button`
   border-radius: 4px;
   border: none;
   cursor: pointer;
+  align-self: center;
+  font-weight: 600;
+
+  &:hover {
+    background-color: #2c5282;
+  }
 `;
 
 export default function Dashboard() {
@@ -126,7 +141,7 @@ export default function Dashboard() {
     colid: "",
     program_code: "",
     year: "",
-    course_code: ""
+    course_code: "",
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -146,13 +161,12 @@ export default function Dashboard() {
   const fetchStudentData = (studentName) => {
     axios
       .get(`${BASE_URL}api/attendance_dashboard`, {
-        params: { ...filters, name: studentName }
+        params: { ...filters, name: studentName },
       })
       .then((res) => {
-        // Example Pie Chart Data: Present vs Absent
         const total = res.data.reduce((sum, item) => sum + item.count, 0);
         const present = total;
-        const absent = Math.max(0, 200 - total); // Mock absent calculation
+        const absent = Math.max(0, 200 - total); // Mock absent value
 
         setStudentChartData({
           labels: ["Present", "Absent"],
@@ -160,9 +174,9 @@ export default function Dashboard() {
             {
               label: "Attendance",
               data: [present, absent],
-              backgroundColor: ["#38a169", "#e53e3e"]
-            }
-          ]
+              backgroundColor: ["#38a169", "#e53e3e"],
+            },
+          ],
         });
       })
       .catch((err) => console.error("Error fetching student data:", err));
@@ -183,14 +197,13 @@ export default function Dashboard() {
 
         {/* Filter Section */}
         <FilterSection>
-          <Select
+          <Input
+            placeholder="College ID"
             value={filters.colid}
-            onChange={(e) => setFilters({ ...filters, colid: e.target.value })}
-          >
-            <option value="">Select College ID</option>
-            <option value="C1">C1</option>
-            <option value="C2">C2</option>
-          </Select>
+            onChange={(e) =>
+              setFilters({ ...filters, colid: e.target.value })
+            }
+          />
           <Input
             placeholder="Program Code"
             value={filters.program_code}
@@ -198,7 +211,7 @@ export default function Dashboard() {
               setFilters({ ...filters, program_code: e.target.value })
             }
           />
-          <Input
+          {/* <Input
             placeholder="Year"
             value={filters.year}
             onChange={(e) => setFilters({ ...filters, year: e.target.value })}
@@ -209,7 +222,7 @@ export default function Dashboard() {
             onChange={(e) =>
               setFilters({ ...filters, course_code: e.target.value })
             }
-          />
+          /> */}
           <Button onClick={fetchData}>Apply Filters</Button>
         </FilterSection>
 
@@ -223,6 +236,8 @@ export default function Dashboard() {
 
         {loading ? (
           <LoadingSpinner />
+        ) : filteredData.length === 0 ? (
+          <EmptyState>No attendance data found.</EmptyState>
         ) : (
           <Table>
             <TableHeader>
