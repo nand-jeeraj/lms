@@ -20,9 +20,10 @@ def load_known_faces_from_db(colid, program_code, year=None):
         "facedata": {"$exists": True},
         "colid": int(colid) if isinstance(colid, str) else colid,
         "programcode": {"$regex": f"^{program_code}$", "$options": "i"}
+        
     }
 
-    if year and year.strip():
+    if year ():
         query["admissionyear"] = {"$regex": f"^{year}$", "$options": "i"}
 
     students = db.users.find(query, {"name": 1, "facedata": 1})
@@ -36,7 +37,6 @@ def load_known_faces_from_db(colid, program_code, year=None):
     known_encs, known_names = zip(*known_data) if known_data else ([], [])
 
     return list(known_encs), list(known_names)
-
 
 def recognize_faces_from_bytes(image_bytes, known_encs, known_names):
     try:
