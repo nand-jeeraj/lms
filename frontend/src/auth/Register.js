@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import api from "../services/api";
+import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { motion } from "framer-motion";
 import { BASE_URL } from '../services/api';
-import axios from "axios";
-
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
-
 
 const PageContainer = styled.div`
   display: flex;
@@ -195,7 +192,15 @@ const FileName = styled.div`
 `;
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "Student",  colid: "",programcode: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "Student",
+    colid: "",
+    programcode: "",
+    year: "",   // added year here
+  });
   const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -219,14 +224,17 @@ export default function Register() {
       return;
     }
     if (!form.colid || isNaN(form.colid)) {
-  alert("College ID must be a number");
-  return;
-}
-if (form.role.toLowerCase() === "student" && !form.programcode) {
+      alert("College ID must be a number");
+      return;
+    }
+    if (form.role.toLowerCase() === "student" && !form.programcode) {
       alert("Program Code is required for students.");
       return;
     }
-
+    if (form.role.toLowerCase() === "student" && (!form.year || isNaN(form.year))) {
+      alert("Valid Year is required for students.");
+      return;
+    }
 
     setIsLoading(true);
     const data = new FormData();
@@ -237,7 +245,7 @@ if (form.role.toLowerCase() === "student" && !form.programcode) {
     data.append("image", image);
     data.append("colid", form.colid);
     data.append("programcode", form.role.toLowerCase() === "student" ? form.programcode : "NA");
-
+    data.append("admissionyear", form.role.toLowerCase() === "student" ? form.year : "NA");  // changed from "year" to "admissionyear"
 
 
     try {
@@ -300,7 +308,6 @@ if (form.role.toLowerCase() === "student" && !form.programcode) {
           <option value="faculty">Faculty</option>
         </FormSelect>
 
-
         <FormInput
           type="text"
           placeholder="College ID"
@@ -311,16 +318,25 @@ if (form.role.toLowerCase() === "student" && !form.programcode) {
         />
 
         {form.role.toLowerCase() === "student" && (
-  <FormInput
-    type="text"
-    placeholder="Program Code"
-    value={form.programcode}
-    onChange={(e) => setForm({ ...form, programcode: e.target.value })}
-    required
-    disabled={isLoading}
-  />
-)}
-
+          <>
+            <FormInput
+              type="text"
+              placeholder="Program Code"
+              value={form.programcode}
+              onChange={(e) => setForm({ ...form, programcode: e.target.value })}
+              required
+              disabled={isLoading}
+            />
+            <FormInput
+              type="text"
+              placeholder="Year"
+              value={form.year}
+              onChange={(e) => setForm({ ...form, year: e.target.value })}
+              required
+              disabled={isLoading}
+            />
+          </>
+        )}
 
         <FileInputWrapper>
           <FileInputLabel disabled={isLoading}>

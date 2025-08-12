@@ -12,30 +12,31 @@ db = client[os.getenv("DB_NAME")]
 
 
 
-def load_known_faces_from_db(colid, program_code):
-    print(f" Searching for students with colid: {colid}")
+def load_known_faces_from_db(colid, program_code, year=None):
+    print(f"Searching for students with colid: {colid}, program_code: {program_code}, year: {year}")
 
     query = {
         "role": {"$regex": "^student$", "$options": "i"},
         "facedata": {"$exists": True},
         "colid": int(colid) if isinstance(colid, str) else colid,
         "programcode": {"$regex": f"^{program_code}$", "$options": "i"}
+        
     }
 
-    students = db.users.find(query, {"name": 1, "facedata": 1})  
+    if year ():
+        query["admissionyear"] = {"$regex": f"^{year}$", "$options": "i"}
 
-    
+    students = db.users.find(query, {"name": 1, "facedata": 1})
+
     known_data = [
         (np.array(s["facedata"]), s["name"])
         for s in students
         if "facedata" in s and isinstance(s["facedata"], list)
     ]
 
-    
     known_encs, known_names = zip(*known_data) if known_data else ([], [])
 
     return list(known_encs), list(known_names)
-
 
 def recognize_faces_from_bytes(image_bytes, known_encs, known_names):
     try:

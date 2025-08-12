@@ -42,6 +42,7 @@ def upload():
           student = db.users.find_one({"name": name, "role": "Student"})
           db.uploaded_photos.insert_one({
             "colid": colid,
+            "programcode": program_code,
             "timestamp": datetime.utcnow(),
             "image_base64": base64.b64encode(image_bytes).decode(),
             "present_Students": present,
@@ -89,6 +90,8 @@ def upload():
             "error": "Upload failed",
             "details": str(e)
         }), 500
+
+
 
 # Export router
 router = upload_router

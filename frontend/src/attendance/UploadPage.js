@@ -150,7 +150,7 @@ const PresentList = styled.ul`
 const PresentItem = styled.li`
   padding: 0.5rem 0;
   border-bottom: 1px solid #e2e8f0;
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -165,6 +165,7 @@ const NoKnownText = styled.p`
 export default function UploadPage() {
   const [image, setImage] = useState(null);
   const [programCode, setProgramCode] = useState("");
+  const [year, setYear] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -174,17 +175,21 @@ export default function UploadPage() {
       return;
     }
 
+    if (year && (!/^\d{4}$/.test(year) || parseInt(year) < 1900 || parseInt(year) > 2100)) {
+      alert("Please enter a valid 4-digit year.");
+      return;
+    }
+
     const colid = localStorage.getItem("colid");
-    console.log("colid:", colid);
 
     const fd = new FormData();
     fd.append("image", image);
     fd.append("colid", colid);
     fd.append("program_code", programCode);
-
+    fd.append("year", year);
 
     setLoading(true);
-    setResult(null); 
+    setResult(null);
 
     try {
       const res = await axios.post(`${BASE_URL}api/attendance_upload`, fd, {
@@ -199,9 +204,6 @@ export default function UploadPage() {
       setLoading(false);
     }
   };
-  
-
-
 
   return (
     <UploadPageContainer>
@@ -212,6 +214,7 @@ export default function UploadPage() {
       >
         <UploadTitle>Upload Group Photo</UploadTitle>
 
+        {/* Image Input */}
         <UploadInputContainer>
           <UploadInputLabel disabled={loading}>
             {image ? image.name : "Choose an image"}
@@ -224,29 +227,54 @@ export default function UploadPage() {
           </UploadInputLabel>
         </UploadInputContainer>
 
+        {/* Program Code Input */}
+        <UploadInputContainer>
+          <UploadInputLabel as="div">
+            <input
+              type="text"
+              placeholder="Enter Program Code"
+              value={programCode}
+              onChange={(e) => setProgramCode(e.target.value)}
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "0rem",
+                border: "none",
+                borderRadius: "0.5rem",
+                fontSize: "1rem",
+                backgroundColor: "transparent",
+                outline: "none",
+                fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+              }}
+            />
+          </UploadInputLabel>
+        </UploadInputContainer>
 
-<UploadInputContainer>
-  <UploadInputLabel as="div">
-    <input
-      type="text"
-      placeholder="Enter Program Code"
-      value={programCode}
-      onChange={(e) => setProgramCode(e.target.value)}
-      disabled={loading}
-      style={{
-        width: "100%",
-        padding: "0rem",
-        border: "none",
-        borderRadius: "0.5rem",
-        fontSize: "1rem",
-        backgroundColor: "transparent",
-        outline: "none",
-        fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
-      }}
-    />
-  </UploadInputLabel>
-</UploadInputContainer>
+        {/* Year Input */}
+        <UploadInputContainer>
+          <UploadInputLabel as="div">
+            <input
+              type="text"
+              placeholder="Enter Year"
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              disabled={loading}
+              maxLength={4}
+              style={{
+                width: "100%",
+                padding: "0rem",
+                border: "none",
+                borderRadius: "0.5rem",
+                fontSize: "1rem",
+                backgroundColor: "transparent",
+                outline: "none",
+                fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+              }}
+            />
+          </UploadInputLabel>
+        </UploadInputContainer>
 
+        {/* Upload Button */}
         <UploadButton
           onClick={submit}
           disabled={loading}
@@ -257,9 +285,8 @@ export default function UploadPage() {
           {loading ? "Processing..." : "Upload"}
         </UploadButton>
 
-        {loading && (
-          <LoadingText>Detecting faces, please wait...</LoadingText>
-        )}
+        {/* Loading & Result UI */}
+        {loading && <LoadingText>Detecting faces, please wait...</LoadingText>}
 
         {result && !loading && (
           <ResultContainer
