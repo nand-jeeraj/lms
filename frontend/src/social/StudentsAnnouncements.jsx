@@ -86,13 +86,15 @@ const EmptyState = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 `;
 
+const colid = parseInt(localStorage.getItem("colid")) || null;
+
 export default function StudentAnnouncements() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${BASE_URL}announcements`)
+    fetch(`${BASE_URL}announcements?colid=${colid}`)
       .then(res => res.json())
       .then(data => {
         setAnnouncements(data);

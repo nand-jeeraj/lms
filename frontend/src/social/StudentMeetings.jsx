@@ -110,13 +110,15 @@ const JoinLink = styled.a`
   }
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0;
+
 export default function StudentMeetings() {
   const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const loadMeetings = async () => {
     try {
-      const response = await fetch(`${BASE_URL}meetings`);
+      const response = await fetch(`${BASE_URL}meetings?colid=${colid}`);
       const data = await response.json();
       setMeetings(data);
     } catch (err) {

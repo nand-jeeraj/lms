@@ -112,6 +112,8 @@ const SubmitButton = styled(motion.button)`
   }
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0;
+
 export default function StudentFeedback() {
   const [text, setText] = useState("");
   const [facultyList, setFacultyList] = useState([]);
@@ -126,7 +128,7 @@ export default function StudentFeedback() {
     const fetchFaculty = async () => {
       try {
         const token = localStorage.getItem("token"); 
-        const response = await fetch(`${BASE_URL}users?role=faculty`, {
+        const response = await fetch(`${BASE_URL}users?role=faculty&colid=${colid}`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -161,6 +163,7 @@ const submitFeedback = async () => {
         "Authorization": `Bearer ${token}`  
       },
       body: JSON.stringify({
+        colid : colid,
         faculty_id: selectedFaculty,
         text,
         rating,

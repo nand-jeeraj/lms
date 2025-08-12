@@ -125,6 +125,8 @@ const EmptyState = styled.div`
   font-size: 1rem;
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0; // Default to 0 if not set
+
 export default function FacultyAnnouncements() {
   const [form, setForm] = useState({ title: "", message: "" });
   const [announcements, setAnnouncements] = useState([]);
@@ -135,7 +137,7 @@ export default function FacultyAnnouncements() {
 
   const load = async () => {
     try {
-      const response = await fetch(`${BASE_URL}announcements`);
+      const response = await fetch(`${BASE_URL}announcements?colid=${colid}`);
       const data = await response.json();
       setAnnouncements(data);
     } catch (err) {
@@ -158,10 +160,10 @@ export default function FacultyAnnouncements() {
           "x-user-name": name,
           "x-user-role": role
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify({ ...form, colid })
       });
       showAlert("Announcement posted", "Success");
-      setForm({ title: "", message: "" });
+      setForm({title: "", message: "" });
       load();
     } catch (err) {
       showAlert("Error posting announcement", "Error");

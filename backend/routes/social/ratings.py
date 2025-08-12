@@ -46,6 +46,10 @@ def get_dummy_user():
 @router.route("/rate", methods=["POST"])
 def submit_rating():
     data = request.get_json()
+    colid = data.get("colid")
+    if colid:
+        colid = int(colid)
+
     rating_data = RatingSubmit(
         faculty_id=data["faculty_id"],
         rating=data["rating"],
@@ -58,7 +62,7 @@ def submit_rating():
 
     try:
         rating_dict = {
-            "col_id": str(uuid4()),
+            "colid": colid,
             "faculty_id": rating_data.faculty_id,
             "Student_id": str(user["_id"]),
             "rating": rating_data.rating,
@@ -102,7 +106,12 @@ def submit_course_rating():
         if not course_rating.course_name or not course_rating.rating:
             return jsonify({"detail": "Course name and rating are required"}), 400
 
+        colid = data.get("colid")
+        if colid:
+            colid = int(colid)
+
         rating_dict = {
+            "colid": colid,
             "Student_id": str(user["_id"]),
             "course_name": course_rating.course_name,
             "rating": course_rating.rating,
@@ -117,10 +126,14 @@ def submit_course_rating():
 @router.route("/faculty-view-course-ratings", methods=["GET"])
 def view_all_course_ratings():
     user = get_dummy_user()
+    colid = request.args.get("colid")
+    if colid:
+        colid = int(colid)
+        
     if user["role"] != "faculty":
         return jsonify({"detail": "Only faculty can view all course ratings"}), 403
     try:
-        ratings = list(course_ratings_collection.find())
+        ratings = list(course_ratings_collection.find({"colid": colid}))
         results = []
         for r in ratings:
             Student = users_collection.find_one({"_id": ObjectId(r["Student_id"])})
@@ -138,10 +151,14 @@ def view_all_course_ratings():
 @router.route("/faculty-course-ratings", methods=["GET"])
 def get_faculty_course_ratings():
     user = get_dummy_user()
+    colid = request.args.get("colid") or request.json.get("colid")
+    if colid:
+        colid = int(colid)
     if user["role"] != "faculty":
         return jsonify({"detail": "Only faculty can view course ratings"}), 403
     try:
-        ratings = list(course_ratings_collection.find())
+        ratings = list(course_ratings_collection.find({"colid": colid}))
+        
         result = [{
             "course_name": r.get("course_name", "N/A"),
             "Student_name": r.get("Student_name", "Unknown"),

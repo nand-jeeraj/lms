@@ -34,6 +34,13 @@ class Announcement:
 def create_announcement():
     try:
         data = request.get_json()
+        colid = data.get("colid")
+        query = {}
+        if colid:
+            query["col_id"] = int(colid)
+        else:
+            query["col_id"] = colid
+
         announcement = AnnouncementCreate(title=data['title'], message=data['message'])
         
         # Dummy user for simulation (since auth removed)
@@ -43,6 +50,7 @@ def create_announcement():
         }
 
         announcement_dict = {
+            "colid": colid,
             "col_id": str(uuid4()),
             "title": announcement.title,
             "message": announcement.message,
@@ -57,7 +65,13 @@ def create_announcement():
 @router.route("/announcements", methods=["GET"])
 def get_announcements():
     try:
-        announcements = list(announcements_collection.find().sort("created_at", -1))
+        colid = request.args.get("colid")
+        query = {}
+        if colid:
+            query["colid"] = int(colid)
+        else:
+            query["colid"] = colid
+        announcements = list(announcements_collection.find(query).sort("created_at", -1))
         result = []
         for a in announcements:
             result.append({

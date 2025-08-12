@@ -61,7 +61,16 @@ def get_dummy_user():
 @router.route("/discussions", methods=["GET"])
 def get_discussions():
     try:
-        discussions = list(discussions_collection.find().sort("created_at", -1))
+        colid = request.args.get("colid")
+        query = {}
+
+        if colid:
+            query["colid"] = int(colid)
+        else:
+            query["colid"] = colid
+
+        discussions = list(discussions_collection.find(query).sort("created_at", -1))
+        
         for d in discussions:
             d["_id"] = str(d["_id"])
             d["body"] = d.get("body") or d.get("content") or ""
@@ -76,7 +85,14 @@ def post_discussion():
     user = get_dummy_user()
     try:
         data = request.get_json()
+        colid = data.get("colid")
+        if colid:
+            colid = int(colid)
+        else:
+            colid = colid
+
         discussion_dict = {
+            "colid": colid,
             "user_id": str(user["_id"]),
             "author_name": user["name"],
             "author_role": user["role"],

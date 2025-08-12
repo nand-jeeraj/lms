@@ -107,6 +107,8 @@ const SubmitButton = styled(motion.button)`
   }
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0;
+
 const RatingDisplay = styled.div`
   font-size: 1.25rem;
   margin-bottom: 1rem;
@@ -122,7 +124,7 @@ export default function FacultyFeedback() {
 
   const load = async () => {
     try {
-      const response = await fetch(`${BASE_URL}feedback`);
+      const response = await fetch(`${BASE_URL}feedback?colid=${colid}`);
       const data = await response.json();
       setFeedbacks(data);
     } catch (err) {
@@ -140,7 +142,7 @@ export default function FacultyFeedback() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ response: text })
+        body: JSON.stringify({ response: text, colid: colid }),
       });
       showAlert("Response sent", "success");
       setResponses({ ...responses, [id]: "" });

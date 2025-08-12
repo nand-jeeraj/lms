@@ -126,6 +126,8 @@ const JoinLink = styled.a`
   }
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0;
+
 export default function VideoMeetings() {
   const [form, setForm] = useState({ title: "", time: "", link: "" });
   const [meetings, setMeetings] = useState([]);
@@ -136,7 +138,7 @@ export default function VideoMeetings() {
 
   const loadMeetings = async () => {
     try {
-      const response = await fetch(`${BASE_URL}meetings`);
+      const response = await fetch(`${BASE_URL}meetings?colid=${colid}`);
       const data = await response.json();
       setMeetings(data);
     } catch (err) {
@@ -156,7 +158,7 @@ export default function VideoMeetings() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify({ ...form, colid }),
       });
       showAlert("Meeting created", "success");
       setForm({ title: "", time: "", link: "" });

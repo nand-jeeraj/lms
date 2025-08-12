@@ -203,6 +203,8 @@ const StudentBadge = styled.span`
   margin-left: 0.5rem;
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0; // Default to 0 if not set
+
 export default function DiscussionBoard() {
   const [posts, setPosts] = useState([]);
   const [form, setForm] = useState({ title: "", body: "" });
@@ -217,7 +219,7 @@ export default function DiscussionBoard() {
 
   const load = async () => {
     try {
-      const response = await fetch(`${BASE_URL}discussions`);
+      const response = await fetch(`${BASE_URL}discussions?colid=${colid}`);
       const data = await response.json();
       setPosts(data);
     } catch (err) {
@@ -242,7 +244,8 @@ export default function DiscussionBoard() {
         },
         body: JSON.stringify({
           title: form.title,
-          body: form.body
+          body: form.body,
+          colid: colid
         })
       });
       setForm({ title: "", body: "" });
@@ -274,7 +277,7 @@ export default function DiscussionBoard() {
           "x-user-name": name,
           "x-user-role": role
         },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text, colid })
       });
       setCommentText({ ...commentText, [id]: "" });
       showToast("Comment added", "success");
