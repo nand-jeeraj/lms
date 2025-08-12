@@ -1,24 +1,9 @@
 # .gitignore for a project
 
-# Ignore environment files
 .env
-
-# Ignore build artifacts
 build
-
-# node_modules directory
 node_modules/
-
-# Ignore Python cache files
-__pycache__/
-*.pyc
-
-# Ignore virtual environment directories
 venv
 env
-
-# Ignore log files
 .DS_Store
-
-# Ignore compiled Python files
 *.pyc

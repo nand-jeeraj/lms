@@ -265,15 +265,33 @@ export default function Dashboard() {
           </Table>
         )}
 
-        {/* Student Pie Chart */}
-        {selectedStudent && studentChartData && (
-          <div style={{ marginTop: "2rem" }}>
-            <h3>
-              Attendance Report for <b>{selectedStudent}</b>
-            </h3>
-            <Pie data={studentChartData} />
-          </div>
-        )}
+        {/* Student Pie Chart + Stats */}
+       
+        {/* Student Pie Chart + Stats */}
+{selectedStudent && studentChartData && (
+  <div style={{ marginTop: "2rem", textAlign: "center" }}>
+    <h3>
+      Attendance Report for <b>{selectedStudent}</b>
+    </h3>
+    <div
+      style={{
+        width: "350px",  
+        height: "350px", 
+        margin: "0 auto", 
+      }}
+    >
+      <Pie
+        data={studentChartData.chart}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false, 
+        }}
+      />
+    </div>
+  </div>
+)}
+
+
       </Card>
     </Container>
   );
