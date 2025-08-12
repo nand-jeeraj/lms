@@ -504,12 +504,12 @@ const handleAIFileUpload = async (e) => {
     });
 
     const payload = {
-      colid: colid,
+      colid: parseInt(colid, 10),
       title: form.title,
       questions: questions,
       ...(form.start_time && form.end_time && {
-        start_time: new Date(form.start_time).toISOString(),
-        end_time: new Date(form.end_time).toISOString(),
+        start_time: form.start_time, 
+        end_time: form.end_time,
         duration_minutes: form.duration_minutes
       })
     };

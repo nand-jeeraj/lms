@@ -19,6 +19,13 @@ scheduled_assignments_collection = db["scheduled_assignments"]
 def create_assignment():
     try:
         assignment = request.get_json()
+
+        if "colid" in assignment:
+            try:
+                assignment["colid"] = int(assignment["colid"])
+            except ValueError:
+                return jsonify({"detail": "colid must be an integer"}), 400
+            
         # Ensure each question has a type and ID
         for question in assignment["questions"]:
             if not question.get("id"):
@@ -34,6 +41,13 @@ def create_assignment():
 def create_scheduled_assignment():
     try:
         assignment = request.get_json()
+
+        if "colid" in assignment:
+            try:
+                assignment["colid"] = int(assignment["colid"])
+            except ValueError:
+                return jsonify({"detail": "colid must be an integer"}), 400
+
         # Add IDs to each question if not provided
         for question in assignment["questions"]:
             if not question.get("id"):
@@ -46,7 +60,15 @@ def create_scheduled_assignment():
 @router.route("/assignments", methods=["GET"])
 def get_assignments():
     try:
-        assignments = list(assignments_collection.find({}))
+        colid = request.args.get("colid")
+        query = {} 
+        if colid:
+            try:
+                query["colid"] = int(colid)
+            except ValueError:
+                query["colid"] = colid
+
+        assignments = list(assignments_collection.find(query))
         for assignment in assignments:
             assignment["_id"] = str(assignment["_id"])
         return jsonify(assignments)
@@ -56,7 +78,14 @@ def get_assignments():
 @router.route("/scheduled-assignments", methods=["GET"])
 def get_scheduled_assignments():
     try:
-        assignments = list(scheduled_assignments_collection.find({}))
+        colid = request.args.get("colid")
+        query = {}
+        if colid:
+            try:
+                query["colid"] = int(colid)
+            except ValueError:
+                query["colid"] = colid
+        assignments = list(scheduled_assignments_collection.find(query))
         for assignment in assignments:
             assignment["_id"] = str(assignment["_id"])
         return jsonify(assignments)

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import logging
@@ -25,11 +25,17 @@ assignment_submission_collection = assignment_submissions_collection
 
 @router.route("/submissions", methods=["GET"])
 def get_quiz_submissions():
+    colid = request.args.get("colid")
+    query = {}
+    if colid:
+        query["colid"] = int(colid)
+    else:
+        query["colid"] = colid
     # Get all quiz submissions with user names
-    submissions = list(submission_collection.find({}))
+    submissions = list(submission_collection.find( query ))
     
     # Get all users first for efficient lookup
-    users = {str(user["_id"]): user["name"] for user in db.users.find({}, {"_id": 1, "name": 1})}
+    users = {str(user["_id"]): user["name"] for user in db.users.find(query, {"_id": 1, "name": 1})}
     
     # Enhance submissions with user names
     for submission in submissions:
@@ -40,11 +46,18 @@ def get_quiz_submissions():
 
 @router.route("/assignment-submissions", methods=["GET"])
 def get_assignment_submissions():
+    colid = request.args.get("colid")
+    query = {}
+    if colid:
+        query["colid"] = int(colid)
+    else:
+        query["colid"] = colid
+
     # Get all assignment submissions with user names
-    submissions = list(assignment_submission_collection.find({}))
+    submissions = list(assignment_submission_collection.find(query))
     
     # Get all users first for efficient lookup
-    users = {str(user["_id"]): user["name"] for user in db.users.find({}, {"_id": 1, "name": 1})}
+    users = {str(user["_id"]): user["name"] for user in db.users.find(query, {"_id": 1, "name": 1})}
     
     # Enhance submissions with user names
     for submission in submissions:
@@ -57,7 +70,14 @@ def get_assignment_submissions():
 
 @router.route("/all-submissions", methods=["GET"])
 def all_submissions():
-    submissions = list(submission_collection.find())
+    colid = request.args.get("colid")
+    query = {}
+    if colid:
+        query["colid"] = int(colid)
+    else:
+        query["colid"] = colid
+
+    submissions = list(submission_collection.find(query))
     for s in submissions:
         s["_id"] = str(s["_id"])
     return jsonify(submissions)
@@ -65,10 +85,15 @@ def all_submissions():
 @router.route("/leaderboard", methods=["GET"])
 def get_leaderboard():
     try:
-        logger.info("Fetching leaderboard data")
+        colid = request.args.get("colid")
+        query = {}
+        if colid:
+            query["colid"] = int(colid)
+        else:
+            query["colid"] = colid
         
         # Get all users first with both string and ObjectId formats
-        users = list(db.users.find({}, {"_id": 1, "name": 1}))
+        users = list(db.users.find(query, {"_id": 1, "name": 1}))
         user_map = {}
         for user in users:
             # Map both string and ObjectId formats to handle all cases
@@ -115,15 +140,18 @@ def get_leaderboard():
         
         # Main aggregation pipeline with proper ID handling
         def get_scores(collection):
-            pipeline = [
-                {
-                    "$group": {
-                        "_id": "$user_id",
-                        "total_score": {"$sum": "$score"},
-                        "count": {"$sum": 1}
-                    }
+            pipeline = []
+            if colid:  # from the outer function scope
+                pipeline.append({"$match": {"colid": int(colid)}})
+
+            pipeline.append({
+                "$group": {
+                    "_id": "$user_id",
+                    "total_score": {"$sum": "$score"},
+                    "count": {"$sum": 1}
                 }
-            ]
+            })
+
             results = list(collection.aggregate(pipeline))
             
             processed = []

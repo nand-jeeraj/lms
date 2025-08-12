@@ -36,11 +36,14 @@ def security():
 def get_users_by_role():
     try:
         role = request.args.get('role')
+        colid = request.args.get('colid', None)
         if not role:
             raise HTTPException(description="Role parameter is required")
-        
+        if colid:
+            colid = int(colid)
+
         token = request.token  # Set by security decorator
-        users = users_collection.find({"role": role})
+        users = users_collection.find({"role": role, "colid": colid})
         response = [{"_id": str(user["_id"]), "name": user["name"]} for user in users]
         return jsonify(response)
     except HTTPException as e:

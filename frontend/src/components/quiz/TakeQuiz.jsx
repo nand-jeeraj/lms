@@ -425,6 +425,8 @@ const FullscreenWarning = styled.div`
   }
 `;
 
+const colid = parseInt(localStorage.getItem('colid'), 10);
+
 // Add this utility function at the top of your file
 const convertUTCToIST = (utcDateString) => {
   if (!utcDateString) return '';
@@ -470,8 +472,6 @@ function TakeQuiz() {
   const fullscreenHandle = useFullScreenHandle();
 
 useEffect(() => {
-  
-  const colid = parseInt(localStorage.getItem('colid'), 10);
 
   const storedUserId = localStorage.getItem('user_id') || `Student_${Math.random().toString(36).substr(2, 9)}`;
   localStorage.setItem('quizUserId', storedUserId);
@@ -509,6 +509,7 @@ const handleAutoSubmit = useCallback(() => {
   });
 
   const payload = {
+    colid: parseInt(colid, 10),
     user_id: userId,
     quiz_id: selectedQuiz._id,
     quiz_title: selectedQuiz.title,
@@ -768,6 +769,7 @@ const handleSubmit = () => {
   }
 
   const payload = {
+    colid: parseInt(colid, 10),
     user_id: userId,
     quiz_id: selectedQuiz._id,
     quiz_title: selectedQuiz.title,

@@ -111,6 +111,8 @@ const SubmitButton = styled(motion.button)`
   }
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0;
+
 export default function StudentSubmitCourseRating() {
   const [courseName, setCourseName] = useState("");
   const [comment, setComment] = useState("");
@@ -133,6 +135,7 @@ export default function StudentSubmitCourseRating() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          colid: colid,
           course_name: courseName,
           comment,
           rating,

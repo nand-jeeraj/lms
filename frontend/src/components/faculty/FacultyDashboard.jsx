@@ -226,6 +226,8 @@ const itemVariants = {
   }
 };
 
+const colid = parseInt(localStorage.getItem('colid'), 10);
+
 function FacultyDashboard() {
   const [submissions, setSubmissions] = useState({ quizzes: [], assignments: [] });
   const [loading, setLoading] = useState(true);
@@ -237,15 +239,15 @@ function FacultyDashboard() {
   const [assignmentCustomPercentage, setAssignmentCustomPercentage] = useState('');
   const [quizDropdownOpen, setQuizDropdownOpen] = useState(false);
   const [assignmentDropdownOpen, setAssignmentDropdownOpen] = useState(false);
-const [viewingFile, setViewingFile] = useState(null);
-const [fileContent, setFileContent] = useState(null);
-const [marks, setMarks] = useState({});
-const [totalMarks, setTotalMarks] = useState({});
+  const [viewingFile, setViewingFile] = useState(null);
+  const [fileContent, setFileContent] = useState(null);
+  const [marks, setMarks] = useState({});
+  const [totalMarks, setTotalMarks] = useState({});
 
 // Fetch assignment details including total marks
 const fetchAssignmentDetails = async (assignmentId) => {
   try {
-    const response = await axios.get(`${BASE_URL}assignments/${assignmentId}`);
+    const response = await axios.get(`${BASE_URL}assignments/${assignmentId}`,{params: { colid } });
     return response.data;
   } catch (error) {
     console.error("Error fetching assignment details:", error);
@@ -308,7 +310,8 @@ const handleMarkSubmission = async (submissionId, assignmentId, userId) => {
 
     // Refresh data
     console.log("Fetching updated assignment submissions...");
-    const submissionsResponse = await axios.get(`${BASE_URL}assignment-submissions`);
+    const submissionsResponse = await axios.get(`${BASE_URL}assignment-submissions`, { params: { colid } });
+
     console.log("Updated submissions received:", submissionsResponse.data);
 
     setSubmissions(prev => ({ ...prev, assignments: submissionsResponse.data }));
@@ -335,8 +338,8 @@ useEffect(() => {
     try {
       setLoading(true);
       const [quizRes, assignmentRes] = await Promise.all([
-        axios.get(`${BASE_URL}submissions`),
-        axios.get(`${BASE_URL}assignment-submissions`)
+        axios.get(`${BASE_URL}submissions`, { params: { colid } }),
+        axios.get(`${BASE_URL}assignment-submissions`, { params: { colid } })
       ]);
 
       // Fetch assignment details for each submission

@@ -74,6 +74,8 @@ const EmptyState = styled.p`
   padding: 2rem;
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10) || 0;
+
 export default function FacultyViewCourseRatings() {
   const [ratings, setRatings] = useState([]);
 
@@ -86,7 +88,7 @@ export default function FacultyViewCourseRatings() {
     "x-user-name": name
   });
       try {
-        const response = await fetch(`${BASE_URL}faculty-course-ratings`, {
+        const response = await fetch(`${BASE_URL}faculty-course-ratings?colid=${ colid }`, {
           headers: {
             "x-user-role": role,
             "x-user-name": name

@@ -142,6 +142,8 @@ const itemVariants = {
   }
 };
 
+const colid = parseInt(localStorage.getItem('colid') || '1'); // Default to '1' if not set
+
 function QuizAssignmentManagement() {
   const [quizAssignments, setQuizAssignments] = useState([]);
   const [scheduledQuizzes, setScheduledQuizzes] = useState([]);
@@ -163,10 +165,10 @@ const [editForm, setEditForm] = useState({
         setLoadingScheduled(true);
         
         const [quizzesRes, assignmentsRes, scheduledQuizzesRes, scheduledAssignmentsRes] = await Promise.all([
-          axios.get(`${BASE_URL}quizzes`),
-          axios.get(`${BASE_URL}assignments`),
-          axios.get(`${BASE_URL}scheduled-quizzes`),
-          axios.get(`${BASE_URL}scheduled-assignments`)
+          axios.get(`${BASE_URL}quizzes`, { params: { colid } }),
+          axios.get(`${BASE_URL}assignments`, { params: { colid } }),
+          axios.get(`${BASE_URL}scheduled-quizzes`, { params: { colid } }),
+          axios.get(`${BASE_URL}scheduled-assignments`, { params: { colid } })
         ]);
         
         const combined = [
@@ -248,6 +250,7 @@ const handleEditSubmit = async () => {
 
   let endpoint = "";
   const payload = {
+    colid: parseInt(colid, 10),
     title: editForm.title,
     start_time: editForm.start_time,
     end_time: editForm.end_time,

@@ -350,6 +350,8 @@ const RemoveFileButton = styled.button`
   font-size: 0.8rem;
 `;
 
+const colid = parseInt(localStorage.getItem("colid"), 10);
+
 // Animation variants
 const questionVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -407,6 +409,7 @@ const handleFileSubmit = async (e) => {
   
   try {
     const formData = new FormData();
+    formData.append("colid", parseInt(colid, 10));
     formData.append("title", fileAssignment.title);
     formData.append("totalMarks", fileAssignment.totalMarks || "0");
     formData.append("file", fileAssignment.file);
@@ -585,6 +588,7 @@ const handleFileSubmit = async (e) => {
     try {
       // Clean the data before sending
       const assignmentData = {
+        colid: parseInt(colid, 10),
         title: assignment.title.trim(),
         questions: assignment.questions.map(q => ({
           type: q.type,

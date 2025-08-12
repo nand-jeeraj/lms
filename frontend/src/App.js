@@ -332,7 +332,16 @@ function App() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<LandingPage />} />
-          
+              <Route path="/forms/:formId" element={
+                <motion.div
+                  initial="initial"
+                  animate="in"
+                  exit="out"
+                  variants={pageVariants}
+                >
+                  <FormFiller />
+                </motion.div>
+              } />
           {/* Student Routes */}
           {userRole === "Student" && (
             <>

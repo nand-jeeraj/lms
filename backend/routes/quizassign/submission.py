@@ -39,7 +39,8 @@ class Answer:
         }
 
 class Submission:
-    def __init__(self, user_id, quiz_id, quiz_title, answers, auto_submitted=False, retake_reason=None):
+    def __init__(self, colid, user_id, quiz_id, quiz_title, answers, auto_submitted=False, retake_reason=None):
+        self.colid = colid
         self.user_id = user_id
         self.quiz_id = quiz_id
         self.quiz_title = quiz_title
@@ -49,6 +50,7 @@ class Submission:
 
     def dict(self):
         return {
+            "colid": self.colid,
             "user_id": self.user_id,
             "quiz_id": self.quiz_id,
             "quiz_title": self.quiz_title,
@@ -128,6 +130,7 @@ def submit_quiz():
     try:
         data = request.get_json()
         submission = Submission(
+            colid=data.get("colid"),
             user_id=data["user_id"],
             quiz_id=data["quiz_id"],
             quiz_title=data["quiz_title"],
@@ -233,6 +236,7 @@ def submit_quiz():
 
         # Prepare submission data
         submission_data = {
+            "colid": submission.colid,
             "user_id": submission.user_id,
             "quiz_id": submission.quiz_id,
             "quiz_title": submission.quiz_title,
@@ -290,7 +294,8 @@ class AssignmentAnswer:
         }
 
 class AssignmentSubmission:
-    def __init__(self, user_id, assignment_id, assignment_title, answers, auto_submitted=False, retake_reason=None):
+    def __init__(self, colid, user_id, assignment_id, assignment_title, answers, auto_submitted=False, retake_reason=None):
+        self.colid = colid
         self.user_id = user_id
         self.assignment_id = assignment_id
         self.assignment_title = assignment_title
@@ -300,6 +305,7 @@ class AssignmentSubmission:
 
     def dict(self):
         return {
+            "colid": self.colid,
             "user_id": self.user_id,
             "assignment_id": self.assignment_id,
             "assignment_title": self.assignment_title,
@@ -313,6 +319,7 @@ def submit_assignment():
     try:
         data = request.get_json()
         submission = AssignmentSubmission(
+            colid=data.get("colid"),
             user_id=data["user_id"],
             assignment_id=data["assignment_id"],
             assignment_title=data["assignment_title"],
@@ -417,6 +424,7 @@ def submit_assignment():
 
         # Prepare submission data
         submission_data = {
+            "colid": submission.colid,
             "user_id": submission.user_id,
             "assignment_id": submission.assignment_id,
             "assignment_title": submission.assignment_title,

@@ -27,11 +27,12 @@ class FeedbackResponse:
         self.response = response
 
 class FeedbackCreate:
-    def __init__(self, text: str, faculty_id: str, rating: int, student_id: str):
+    def __init__(self, text: str, faculty_id: str, rating: int, student_id: str, colid: int = None):
         self.text = text
         self.faculty_id = faculty_id
         self.rating = rating
         self.student_id = student_id
+        self.colid = colid
 
 class FeedbackCommentCreate:
     def __init__(self, text: str):
@@ -41,6 +42,12 @@ class FeedbackCommentCreate:
 def submit_feedback():
     try:
         data = request.get_json()
+        colid = data.get("colid", None)
+        if colid:
+            colid = int(colid)
+        else:
+            colid = colid
+
         print("📥 Received data:", data)
         
         student_id = data.get("student_id")
@@ -54,7 +61,7 @@ def submit_feedback():
         except Exception as e:
             return jsonify({"detail": f"Invalid student_id format: {e}"}), 400
         
-        student = db.users.find_one({"_id": student_obj_id})
+        student = db.users.find_one({"_id": student_obj_id, "colid": colid})
         if not student:
             return jsonify({"detail": "Student not found"}), 404
             
@@ -65,6 +72,7 @@ def submit_feedback():
         feedback = FeedbackCreate(**data)
         
         feedback_dict = {
+            "colid": colid,
             "col_id": str(uuid4()),
             "Student_id": student_id,
             "Student_name": student["name"],  # Use actual name from database
@@ -90,9 +98,18 @@ def get_feedback():
 
     if user["role"] != "faculty":
         return jsonify({"detail": "Only faculty can view feedback"}), 403
+    colid = request.args.get("colid", None)
+    query = {}
+    if colid:
+        try:
+            query["colid"] = int(colid)
+        except :
+            query["colid"] = colid
+    else:
+        query["colid"] = colid
 
     try:
-        feedbacks = list(feedback_collection.find().sort("created_at", -1))
+        feedbacks = list(feedback_collection.find(query).sort("created_at", -1))
         result = []
         for f in feedbacks:
 

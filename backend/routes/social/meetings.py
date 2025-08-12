@@ -34,8 +34,14 @@ def create_meeting():
         time=data['time'],
         link=data['link']
     )
+    colid = data.get('colid')
+    try:
+        colid = int(colid)
+    except:
+        colid = colid
 
     meeting_data = {
+        "colid": colid,
         "col_id": str(uuid4()) or "col id",
         "title": meeting.title,
         "time": meeting.time,
@@ -53,7 +59,14 @@ def create_meeting():
 @router.route("/meetings", methods=["GET"])
 def list_meetings():
     try:
-        meetings = meetings_collection.find().sort("time", 1)
+        colid = request.args.get('colid')
+        query = {}
+        if colid:
+            query["colid"] = int(colid)
+        else:
+            query["colid"] = colid
+
+        meetings = meetings_collection.find(query).sort("time", 1)
         result = []
         for m in meetings:
             result.append({
