@@ -201,10 +201,4 @@ Feel free to fork, open issues or contribute to this project. Let's build better
 
 ---
 
-Let me know if you also want:
-- A PDF version of this `README.md`
-- Logo/banner design for your repo
-- Deployment steps (Render/Netlify/etc.)
-- Swagger or Postman collection for the API
 
-Just ask!
